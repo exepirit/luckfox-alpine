@@ -14,17 +14,6 @@ while getopts ":f:d:" opt; do
   esac
 done
 
-DEVICE_ID="6"
-case $DEVICE_NAME in
-  pico-mini-b) DEVICE_ID="6" ;;
-  pico-plus) DEVICE_ID="7" ;;
-  pico-pro-max) DEVICE_ID="8" ;;
-  *)
-    echo "Invalid device: ${DEVICE_NAME}."
-    exit 1
-    ;;
-esac
-
 rm -rf sdk/sysdrv/custom_rootfs/
 mkdir -p sdk/sysdrv/custom_rootfs/
 cp "$ROOTFS_NAME" sdk/sysdrv/custom_rootfs/
@@ -36,7 +25,15 @@ source env_install_toolchain.sh
 popd || exit
 
 rm -rf .BoardConfig.mk
-echo "$DEVICE_ID" | ./build.sh lunch
+case $DEVICE_NAME in
+  pico-mini-sd) DEVICE="1"; MEDIA="0" ;;
+  pico-mini-flash) DEVICE="1"; MEDIA="1" ;;
+  *)
+    echo "Invalid device: ${DEVICE_NAME}."
+    exit 1
+    ;;
+esac
+printf "$DEVICE\n$MEDIA\n0\n" | ./build.sh lunch
 echo "export RK_CUSTOM_ROOTFS=../sysdrv/custom_rootfs/$ROOTFS_NAME" >> .BoardConfig.mk
 echo "export RK_BOOTARGS_CMA_SIZE=\"1M\"" >> .BoardConfig.mk
 
@@ -44,7 +41,8 @@ echo "export RK_BOOTARGS_CMA_SIZE=\"1M\"" >> .BoardConfig.mk
 ./build.sh uboot
 ./build.sh kernel
 ./build.sh driver
-./build.sh env
+./build.sh en
+
 #./build.sh app
 # package firmware
 ./build.sh firmware
@@ -52,6 +50,5 @@ echo "export RK_BOOTARGS_CMA_SIZE=\"1M\"" >> .BoardConfig.mk
 
 popd || exit
 
-rm -rf output
 mkdir -p output
 cp sdk/output/image/update.img "output/$DEVICE_NAME-sysupgrade.img"

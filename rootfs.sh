@@ -27,6 +27,7 @@ docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 # Create docker
 docker container rm -f armv7alpine
 docker run \
+    --platform=linux/arm/v7 \
     --name armv7alpine \
     --net host \
     --mount type=bind,source=./bootstrap.sh,target=/bootstrap.sh \
@@ -47,6 +48,7 @@ overlay() {
   sed -i -e "s/{TTY_PORT}/$TTY_PORT/g" "$OVERLAY_WORKSPACE/etc/securetty"
   sed -i -e "s/{TTY_PORT}/$TTY_PORT/g" "$OVERLAY_WORKSPACE/etc/inittab"
 
+  chown -R 0:0 $OVERLAY_WORKSPACE
   rsync -a "$OVERLAY_WORKSPACE/" "$ROOTFS_WORKSPACE_MNT/"
   rm -rf "$OVERLAY_WORKSPACE"
 
