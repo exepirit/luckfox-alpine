@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 OUTPUT_DIR="output"
 ROOTFS_FILE="rootfs-alpine.tar.gz"
 
@@ -7,8 +9,8 @@ ROOTFS_WORKSPACE_FILE="$ROOTFS_WORKSPACE_NAME.ext4"
 ROOTFS_WORKSPACE_MNT="/tmp/$ROOTFS_WORKSPACE_NAME/"
 
 rootfs_workspace_drop() {
-  umount -R "$ROOTFS_WORKSPACE_MNT"
-  rm -rf "$ROOTFS_WORKSPACE_FILE" "$ROOTFS_WORKSPACE_MNT"
+  umount -R "$ROOTFS_WORKSPACE_MNT" || true
+  rm -rf "$ROOTFS_WORKSPACE_FILE" "$ROOTFS_WORKSPACE_MNT" || true
 }
 rootfs_workspace_new() {
   mkdir -p "$ROOTFS_WORKSPACE_MNT"
@@ -32,7 +34,8 @@ docker run \
     --net host \
     --mount type=bind,source=./bootstrap.sh,target=/bootstrap.sh \
     -v "$ROOTFS_WORKSPACE_MNT:/extrootfs" \
-    arm32v7/alpine \
+    -v "$PWD:/mnt:ro" \
+    arm32v7/alpine:3.20.8 \
     /bootstrap.sh
 
 # Configuring rootfs and overlay
@@ -51,9 +54,6 @@ overlay() {
   chown -R 0:0 $OVERLAY_WORKSPACE
   rsync -a "$OVERLAY_WORKSPACE/" "$ROOTFS_WORKSPACE_MNT/"
   rm -rf "$OVERLAY_WORKSPACE"
-
-  echo "Include /etc/ssh/sshd_config.d/*.conf" >> \
-    "$ROOTFS_WORKSPACE_MNT/etc/ssh/sshd_config"
 
   ln -s "/etc/init.d/00_link_mount" \
     "$ROOTFS_WORKSPACE_MNT/etc/runlevels/default/00_link_mount"

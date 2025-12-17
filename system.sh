@@ -14,7 +14,7 @@ while getopts ":f:d:" opt; do
   esac
 done
 
-rm -rf sdk/sysdrv/custom_rootfs/
+rm -rf sdk/sysdrv/custom_rootfs/ || true
 mkdir -p sdk/sysdrv/custom_rootfs/
 cp "$ROOTFS_NAME" sdk/sysdrv/custom_rootfs/
 
