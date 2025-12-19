@@ -9,7 +9,7 @@ arch="all"
 license="ISC"
 makedepends="yaml-dev"
 subpackages="$pkgname-dev"
-source="libcyaml-$pkgver.tar.gz::https://github.com/tlsa/libcyaml/archive/refs/tags/$pkgver.tar.gz"
+source="libcyaml-$pkgver.tar.gz::https://github.com/tlsa/libcyaml/archive/refs/tags/v$pkgver.tar.gz"
 builddir="$srcdir/libcyaml-$pkgver"
 
 build() {
@@ -29,5 +29,5 @@ package() {
 }
 
 sha512sums="
-4b78ba28b47c811d0d15e9e23425eac417d72346359678710115a30f9e75cc6f9c98521849eadf6e6f3a96c5b8d5c1ae976be706887d2961531555e90d35e7cb  libcyaml-v1.4.2.tar.gz
+4b78ba28b47c811d0d15e9e23425eac417d72346359678710115a30f9e75cc6f9c98521849eadf6e6f3a96c5b8d5c1ae976be706887d2961531555e90d35e7cb  libcyaml-1.4.2.tar.gz
 "
