@@ -28,7 +28,6 @@ profile_luckfox() {
 		doas \
 		openssl
 		tzdata \
-		agetty \
-		ubi-mount"
+		agetty"
 	apkovl=luckfox
 }
