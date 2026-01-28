@@ -13,6 +13,7 @@ jobs:
         with:
           branch: v3.23
           arch: armv7
+          packages: alpine-sdk
       - name: checkout
         uses: actions/checkout@v4
       - name: build rootfs
