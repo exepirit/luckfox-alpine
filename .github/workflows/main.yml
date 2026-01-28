@@ -17,7 +17,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: build rootfs
-        run: "./scripts/mkimage.sh --arch armv7 --outdir ./output --profile luckfox --repository https://dl-cdn.alpinelinux.org/alpine/v3.23/main"
+        run: |
+          ./scripts/mkimage.sh --arch armv7 --outdir ./output --profile luckfox --repository https://dl-cdn.alpinelinux.org/alpine/v3.23/main
+        shell: alpine.sh {0}
       - name: upload rootfs
         uses: actions/upload-artifact@v4
         with:
