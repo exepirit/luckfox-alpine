@@ -28,7 +28,7 @@ jobs:
   build-system:
     strategy:
       matrix:
-        device: [ pico-mini-b ]
+        device: [ pico-mini-flash ]
     runs-on: ubuntu-latest
     needs: build-rootfs
     steps:
@@ -40,6 +40,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rootfs-alpine
+          path: rootfs
       - name: update apt
         run: sudo apt update
       - name: install deps
@@ -51,7 +52,7 @@ jobs:
           python-is-python3 passwd openssl openssh-server \
           openssh-client vim file cpio rsync"
       - name: build system
-        run: ./system.sh -f rootfs-alpine.tar.gz -d ${{ matrix.device }}
+        run: sudo ./system.sh -f $(find ./rootfs -type f -name "alpine-luckfox-*-armv7.tar.gz" -print -quit) -d ${{ matrix.device }}
       - name: upload update.img
         uses: actions/upload-artifact@v4
         with:

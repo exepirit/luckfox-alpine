@@ -12,6 +12,8 @@ while getopts ":f:d:" opt; do
       ;;
   esac
 done
+set -- "${script_args[@]}" # Reset positional arguments before call `source`
+
 ROOTFS_NAME="$(basename "$ROOTFS_FILENAME")"
 echo "$ROOTFS_FILENAME => $ROOTFS_NAME"
 echo sdk/sysdrv/custom_rootfs/"$ROOTFS_NAME"
@@ -20,13 +22,17 @@ echo sdk/sysdrv/custom_rootfs/"$ROOTFS_NAME"
 mkdir -p sdk/sysdrv/custom_rootfs
 cp "$ROOTFS_FILENAME" sdk/sysdrv/custom_rootfs/"$ROOTFS_NAME"
 
+# env_install_toolchain.sh need this file. don't ask why
+touch $HOME/.bash_profile
+
 pushd sdk
 
 pushd tools/linux/toolchain/arm-rockchip830-linux-uclibcgnueabihf/
 source env_install_toolchain.sh
 popd
 
-rm .BoardConfig.mk
+[ -f ".BoardConfig.mk" ] && rm ".BoardConfig.mk"
+
 case $DEVICE_NAME in
   pico-mini-sd) DEVICE="1"; MEDIA="0" ;;
   pico-mini-flash) DEVICE="1"; MEDIA="1" ;;
