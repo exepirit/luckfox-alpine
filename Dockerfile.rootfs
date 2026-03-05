@@ -1,0 +1,11 @@
+FROM alpine:3.23
+
+RUN apk update && \
+    apk add alpine-sdk fakeroot
+
+RUN adduser -D builder && \
+    addgroup builder abuild && \
+    mkdir -p /packages /output && \
+    chown -R builder:abuild /packages /output
+
+CMD ["/bin/sh"]
