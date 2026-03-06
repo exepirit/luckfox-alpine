@@ -78,10 +78,14 @@ build_packages() {
         -w /home/builder/sources \
 	-e "REPODEST=/home/builder/packages" \
         "${IMAGE_ROOTFS}" \
-	python3 ./scripts/mkpackages.py \
-            --branch mesh \
-            --output-dir /home/builder/packages \
-            --packages-dir /home/builder/sources/packages
+	sh -c '
+    sudo cp /home/builder/.abuild/*.pub /etc/apk/keys/
+
+    python3 ./scripts/mkpackages.py \
+        --branch mesh \
+        --output-dir /home/builder/packages \
+        --packages-dir /home/builder/sources/packages
+'
     
     echo "Packages built in: ${PACKAGES_OUTPUT}"
 }
