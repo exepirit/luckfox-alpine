@@ -77,9 +77,11 @@ build_packages() {
         -v "${PACKAGES_OUTPUT}:/home/builder/packages" \
         -w /home/builder/sources \
 	-e "REPODEST=/home/builder/packages" \
-        -e "BRANCH=mesh" \
         "${IMAGE_ROOTFS}" \
-	/bin/sh ./scripts/mkpackages.sh
+	python3 ./scripts/mkpackages.py \
+            --branch mesh \
+            --output-dir /home/builder/packages \
+            --packages-dir /home/builder/sources/packages
     
     echo "Packages built in: ${PACKAGES_OUTPUT}"
 }
