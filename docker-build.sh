@@ -10,7 +10,7 @@ TARGET="all"
 ARCH="armv7"
 UID_GID="$(id -u):$(id -g)"
 
-IMAGE_ROOTFS="luckfox-rootfs-builder"
+IMAGE_ROOTFS="alpine-rootfs-builder"
 IMAGE_SYSTEM="luckfox-system-builder"
 
 usage() {
@@ -66,50 +66,20 @@ ensure_image() {
 build_packages() {
     echo "==> Building packages..."
     
-    ensure_image "${IMAGE_ROOTFS}" "Dockerfile.rootfs"
+    ensure_image "${IMAGE_ROOTFS}" "Dockerfile"
     
     mkdir -p "${PACKAGES_OUTPUT}"
     
-    docker run --rm \
-        -v "${PACKAGES_DIR}:/packages:ro" \
-        -v "${SCRIPT_DIR}/scripts:/scripts:ro" \
-        -v "${PACKAGES_OUTPUT}:/output" \
-        -w /output \
+    docker run --rm -t \
+	--user builder \
+	-v "abuild:/home/builder/.abuild" \
+	-v "${SCRIPT_DIR}:/home/builder/sources" \
+        -v "${PACKAGES_OUTPUT}:/home/builder/packages" \
+        -w /home/builder/sources \
+	-e "REPODEST=/home/builder/packages" \
+        -e "BRANCH=mesh" \
         "${IMAGE_ROOTFS}" \
-        sh -c '
-            chown -R builder:abuild /output
-            
-            PACKAGER_PRIVKEY="/output/abuild.rsa"
-            if [ ! -f "$PACKAGER_PRIVKEY" ]; then
-                su builder -c "abuild-keygen -a -n"
-                cp "$HOME/builder/.abuild/"*.rsa.pub "$PACKAGER_PRIVKEY.pub" 2>/dev/null || \
-                    cp /home/builder/.abuild/*.rsa.pub "$PACKAGER_PRIVKEY.pub"
-                cp /home/builder/.abuild/*.rsa "$PACKAGER_PRIVKEY"
-                chmod 600 "$PACKAGER_PRIVKEY"
-                chmod 644 "$PACKAGER_PRIVKEY.pub"
-            fi
-            
-            for pubkey in /home/builder/.abuild/*.rsa.pub; do
-                [ -f "$pubkey" ] && cp "$pubkey" /etc/apk/keys/
-            done
-            
-            export PACKAGER_PRIVKEY="$PACKAGER_PRIVKEY"
-            export REPODEST="/output"
-            
-            for pkgdir in /packages/mesh/*/; do
-                pkgname=$(basename "$pkgdir")
-                echo "Building: $pkgname"
-                
-                mkdir -p "/tmp/build/$pkgname"
-                cp -r "$pkgdir"/* "/tmp/build/$pkgname/"
-                chown -R builder:abuild "/tmp/build/$pkgname"
-                cd "/tmp/build/$pkgname"
-                
-                su builder -c "abuild -r"
-            done
-            
-            chown -R '"${UID_GID}"' /output
-        '
+	/bin/sh ./scripts/mkpackages.sh
     
     echo "Packages built in: ${PACKAGES_OUTPUT}"
 }
@@ -151,12 +121,7 @@ build_system() {
         -w /src \
         "${IMAGE_SYSTEM}" \
         bash -c '
-            if [ ! -d "sdk/.git" ]; then
-                git submodule update --init --recursive
-            fi
-            
             ./system.sh -f "'"$rootfs_file"'" -d "'"$DEVICE"'"
-            
             chown -R '"${UID_GID}"' /output
         '
     
@@ -193,12 +158,9 @@ main() {
             echo "Output: ${OUTPUT_DIR}/${DEVICE}-sysupgrade.img"
             ;;
         all)
-            ROOTFS_FILE=$(build_rootfs | tail -1)
-            if [ -z "${ROOTFS_FILE}" ] || [ ! -f "${ROOTFS_FILE}" ]; then
-                echo "Error: Failed to build rootfs"
-                exit 1
-            fi
-            build_system "${ROOTFS_FILE}"
+            build_packages
+            build_rootfs
+            build_system
             echo ""
             echo "Build complete!"
             echo "Output: ${OUTPUT_DIR}/${DEVICE}-sysupgrade.img"
