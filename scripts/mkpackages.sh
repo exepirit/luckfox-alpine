@@ -1,16 +1,10 @@
 #!/bin/sh
 set -e
 
-PACKAGER_PRIVKEY="${PACKAGER_PRIVKEY:-$HOME/.abuild/abuild.rsa}"
 REPODEST="${REPODEST:-./output}"
 PACKAGES_DIR="${PACKAGES_DIR:-./packages}"
 BRANCH="${BRANCH:-mesh}"
 
-if [ ! -f "${PACKAGER_PRIVKEY}" ]; then
-    abuild-keygen -a -n
-fi
-
-export PACKAGER_PRIVKEY
 export REPODEST
 
 for pubkey in "$HOME/.abuild/"*.rsa.pub; do
@@ -19,7 +13,9 @@ for pubkey in "$HOME/.abuild/"*.rsa.pub; do
     fi
 done
 
-for pkgdir in "$PACKAGES_DIR"/mesh/*/; do
+packages_dir="$(realpath "$PACKAGES_DIR")"
+for pkgdir in "$packages_dir"/mesh/*/; do
+    pkgname="$(basename "$pkgdir")"
     echo "Building: $pkgname"
     cd "$pkgdir"
 
