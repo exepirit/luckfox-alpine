@@ -1,0 +1,34 @@
+# Contributor: exepirit <exepir1t@protonmail.com>
+# Maintainer: exepirit <exepir1t@protonmail.com>
+pkgname=rnode
+_commit="cd76ad63bab74dc2d0a06a007ef7ed6a465ce004"
+pkgver=0_git20260303
+pkgrel=0
+pkgdesc="Implementation of RNode functionality for Linux based on SX126x LoRa modules"
+url="https://github.com/exepirit/RNode-linux"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="libgpiod libcyaml"
+makedepends="cmake samurai linux-headers libgpiod-dev libcyaml-dev"
+options="!check" # no tests
+source="rnode-$_commit.tar.gz::https://github.com/exepirit/RNode-linux/archive/$_commit.tar.gz"
+builddir="$srcdir/RNode-linux-$_commit"
+
+build() {
+	if [ "$CBUILD" != "$CHOST" ]; then
+                local crossopts="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_HOST_SYSTEM_NAME=Linux"
+        fi
+        cmake -B build \
+                -DCMAKE_INSTALL_PREFIX=/usr \
+                -DCMAKE_BUILD_TYPE=Release \
+                $crossopts
+        cmake --build build
+}
+
+package() {
+	install -d "$pkgdir"/usr/bin "$pkgdir"/etc
+	install -m755 "$builddir"/build/rnode "$pkgdir"/usr/bin/rnode
+	install -m644 "$builddir"/rnode.yaml "$pkgdir"/etc/rnode.yaml
+}
+
+sha512sums="d65ce3688ae449e0c171bb23f91715ecceb7ef7bd9c7c2c52f53e929846235e723effae23b92d83ed1fb9808ed95d5d475981b7ada1acdc697c3d0f78964727c  rnode-$_commit.tar.gz"

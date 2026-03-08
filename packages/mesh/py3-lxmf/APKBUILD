@@ -1,0 +1,28 @@
+# Contributor: jahway603 <jahway603@tutanota.de>
+# Maintainer: jahway603 <jahway603@tutanota.de>
+pkgname=py3-lxmf
+pkgver=0.9.3
+pkgrel=0
+pkgdesc="A universal, distributed and secure messaging protocol for Reticulum"
+url="https://github.com/markqvist/lxmf"
+arch="all"
+license="custom"
+depends="python3 py3-rns"
+makedepends="py3-gpep517 py3-setuptools py3-wheel wget"
+subpackages="$pkgname-pyc"
+source="lxmf-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz"
+builddir="$srcdir/LXMF-$pkgver"
+options="!check" # no tests
+
+build() {
+	gpep517 build-wheel \
+		--wheel-dir .dist \
+		--output-fd 3 3>&1 >&2
+}
+
+package() {
+	python3 -m installer -d "$pkgdir" \
+		.dist/*.whl
+}
+
+sha512sums="88a49c997e89feed8c8505358222edb81f2fd9bcf082f7ede6f354866d0936b5ab64e98e985c4f2d1541a872563b572d54eb9f088a2245012f52b35deb43354c  lxmf-0.9.3.tar.gz"
