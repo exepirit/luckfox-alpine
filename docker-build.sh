@@ -8,6 +8,7 @@ PACKAGES_OUTPUT="${OUTPUT_DIR}/packages"
 DEVICE="pico-mini-flash"
 TARGET="all"
 ARCH="armv7"
+PROFILE="luckfox"
 UID_GID="$(id -u):$(id -g)"
 
 IMAGE_ROOTFS="alpine-rootfs-builder"
@@ -25,6 +26,7 @@ usage() {
     echo "Options:"
     echo "  -d, --device DEVICE   Device name (default: pico-mini-flash)"
     echo "  -a, --arch ARCH       Target architecture (default: armv7)"
+    echo "  -p, --profile PROFILE Target profile (default: luckfox)"
     echo "  -h, --help            Show this help"
     exit 0
 }
@@ -39,6 +41,10 @@ while [[ $# -gt 0 ]]; do
             ARCH="$2"
             shift 2
             ;;
+	-p|--profile)
+            PROFILE="$2"
+            shift 2
+	    ;;
         -h|--help)
             usage
             ;;
@@ -105,7 +111,8 @@ build_rootfs() {
             ./scripts/mkimage.sh \
                 --arch '"${ARCH}"' \
                 --outdir /output \
-                --profile luckfox \
+                --profile '"${PROFILE}"' \
+		--repository file:///src/output/packages/mesh \
                 --repository https://dl-cdn.alpinelinux.org/alpine/v3.23/main
         '
     
