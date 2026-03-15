@@ -14,7 +14,7 @@ echo "# /etc/inittab
 ::sysinit:/sbin/openrc sysinit
 ::sysinit:/sbin/openrc boot
 ::wait:/sbin/openrc default
-${TTY_PORT}::respawn:/sbin/agetty ${TTY_PORT} vt100
+${TTY_PORT}::respawn:/sbin/agetty --autologin root ${TTY_PORT} vt100
 ::ctrlaltdel:/sbin/reboot
 ::shutdown:/sbin/openrc shutdown" > ./etc/inittab
 
@@ -25,7 +25,3 @@ rc_add localmount default
 rc_add ubi-mount default
 rc_add networking default
 rc_add local default
-
-# Set root password to 'luckfox'
-HASH='$6$arxWOZydYqBTHdmJ$0ZUC3US0SfG3i2oMc9FKr3/FBXFBhCZ0t/bcaN3V8BR6oWDkaGb69etwPBReSE2a8O3WJWL8801dw/HtKPhK20'
-sed -i "s|^root:.*|root:${HASH}:0:0:99999:7:::|" ./etc/shadow
