@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+
+description="RNode LoRa daemon"
+
+command="/usr/bin/rnode"
+command_args="$RNODE_CONF"
+command_user="root"
+
+supervisor="supervise-daemon"
+
+pidfile="/run/rnode.pid"
+
+depend() {
+	need net
+	after localmount
+}

@@ -1,9 +1,9 @@
 # Contributor: exepirit <exepir1t@protonmail.com>
 # Maintainer: exepirit <exepir1t@protonmail.com>
 pkgname=rnode
-_commit="cd76ad63bab74dc2d0a06a007ef7ed6a465ce004"
-pkgver=0_git20260303
-pkgrel=0
+_commit="ae34fa57af187aeadfa7411247f89718c1779efb"
+pkgver=0_git20260313
+pkgrel=1
 pkgdesc="Implementation of RNode functionality for Linux based on SX126x LoRa modules"
 url="https://github.com/exepirit/RNode-linux"
 arch="all"
@@ -11,7 +11,9 @@ license="LGPL-2.1-or-later"
 depends="libgpiod libcyaml"
 makedepends="cmake samurai linux-headers libgpiod-dev libcyaml-dev"
 options="!check" # no tests
-source="rnode-$_commit.tar.gz::https://github.com/exepirit/RNode-linux/archive/$_commit.tar.gz"
+source="rnode-$_commit.tar.gz::https://github.com/exepirit/RNode-linux/archive/$_commit.tar.gz
+	rnode.initd
+	rnode.confd"
 builddir="$srcdir/RNode-linux-$_commit"
 
 build() {
@@ -29,6 +31,13 @@ package() {
 	install -d "$pkgdir"/usr/bin "$pkgdir"/etc
 	install -m755 "$builddir"/build/rnode "$pkgdir"/usr/bin/rnode
 	install -m644 "$builddir"/rnode.yaml "$pkgdir"/etc/rnode.yaml
+
+	# init script
+	install -d "$pkgdir"/etc/init.d "$pkgdir"/etc/conf.d
+	install -m755 "$srcdir"/rnode.initd "$pkgdir"/etc/init.d/rnode
+	install -m644 "$srcdir"/rnode.confd "$pkgdir"/etc/conf.d/rnode
 }
 
-sha512sums="d65ce3688ae449e0c171bb23f91715ecceb7ef7bd9c7c2c52f53e929846235e723effae23b92d83ed1fb9808ed95d5d475981b7ada1acdc697c3d0f78964727c  rnode-$_commit.tar.gz"
+sha512sums="339ce6655679566fa712ca7b26395580b21b646166231b5762d2b504f2fbb084320c00199a5b83d1bedcd09be29b1139d10da0bd8fd4ac9f4bf59ba58fa0ec24  rnode-$_commit.tar.gz
+	057af140ed9d71eee6306b548a038bfc0836fe0dbd7a189f2402c28136321dceba47c403d4dc3d403c8fc2e86bf4e6e1dec09866b46224722f6a0675bab774a5  rnode.initd
+	4c5199097bee2f51c04b15393004dfbbc22b5de0f0b19003a8d1a61c5302e053741ba150e2686aa06aa4ed943ad0c8b88dac8ff3fa6211878faa43c0d058709f  rnode.confd"

@@ -1,0 +1,2 @@
+# Path to rnode configuration file
+RNODE_CONF=/etc/rnode.yaml
