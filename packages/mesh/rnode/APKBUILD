@@ -1,7 +1,7 @@
 # Contributor: exepirit <exepir1t@protonmail.com>
 # Maintainer: exepirit <exepir1t@protonmail.com>
 pkgname=rnode
-_commit="4e6b6a806bf1a9417fcc57d5d6e392deacca43f2"
+_commit="8c8a2b55eeb5e3dbf90c732642e3efa4329236bc"
 pkgver=0_git20260313
 pkgrel=1
 pkgdesc="Implementation of RNode functionality for Linux based on SX126x LoRa modules"
@@ -39,7 +39,7 @@ package() {
 }
 
 sha512sums="
-6c5b3efe2c6f9c26a47023e2777e7d734484eb2b2310759d6f25d2bc8b88a335a26d1ac1aefc64dfa2be364653ff74d76579e4dadeeaa277c6bd1873da0cf601  rnode-$_commit.tar.gz
+c54b9793f5bf1c368ff887313d5c58aa80faec63498f400387fcb31d7265c78d3a89afbc61db602e4da4525d961bc6b9bac6de0c168cb8a13ebfba464892d828  rnode-8c8a2b55eeb5e3dbf90c732642e3efa4329236bc.tar.gz
 56edec0855749de6a3b77dd883626106edafc57ed1eeb1265f8d7ff130359c29db589875f10b6b827976d825f7626b39455dff4d4d55c5a1e28487f76ccc7782  rnode.initd
 4c5199097bee2f51c04b15393004dfbbc22b5de0f0b19003a8d1a61c5302e053741ba150e2686aa06aa4ed943ad0c8b88dac8ff3fa6211878faa43c0d058709f  rnode.confd
 "
